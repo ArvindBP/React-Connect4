@@ -26,6 +26,7 @@ class App extends Component {
         this.calculatewinner_diag2 = this.calculatewinner_diag2.bind(this);
         this.calculatewinner_diag3 =this.calculatewinner_diag3.bind(this);
         this.calculatewinner_diag4 =this.calculatewinner_diag4.bind(this);
+        this.restart_game =this.restart_game.bind(this);
         
     }
     changedata(i) {
@@ -51,7 +52,27 @@ class App extends Component {
         })
         console.log(this.state);
     }
+    restart_game()
+    {
+        
+        this.setState(
+          {
+            column_no: [-1, -1, -1, -1, -1, -1, -1],
+            xisNext: true,
+            grid: [
+                [],
+                [],
+                [],
+                [],
+                [],
+                []
+            ],
+            winner_set: false,
+            winner: null,
+        }
+        )
 
+    }
     calculatewinner_diag3(){
           
           let count1 = 0,
@@ -279,6 +300,7 @@ class App extends Component {
           		<Board state1={this.state} changedata={this.changedata}/>
         	</div>
         </div>
+      <button onClick={this.restart_game}> Restart Game </button>
         </div>
     );
   }

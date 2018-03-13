@@ -7,6 +7,7 @@ export default class Board extends React.Component {
     super(props);
     this.changedata1 = this.changedata1.bind(this);
   }
+  
   renderSquare(i,j) {
     return <Square row_is={i} col_is={j} state2={this.props.state1} />;
   }
