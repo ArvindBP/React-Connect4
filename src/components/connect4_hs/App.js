@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
+import {
+  Route,
+  NavLink,
+  HashRouter
+} from "react-router-dom";
 import './App.css';
+import './about.css';
 // import Gamescreen from '../connect4_gs/gamescreen';
+import About from './about';
 import Board from '../connect4_gs/board';
+import Heading from './heading';
+import Input from './input';
+import Scoreboard from './scoreboard';
 class App extends Component {
     constructor(props) {
         super(props);
@@ -18,6 +28,9 @@ class App extends Component {
             ],
             winner_set: false,
             winner: null,
+            history:[],
+            player:'',
+            moves:0,
         }
         this.changedata = this.changedata.bind(this);
         this.calculatewinner_hori = this.calculatewinner_hori.bind(this);
@@ -27,9 +40,21 @@ class App extends Component {
         this.calculatewinner_diag3 =this.calculatewinner_diag3.bind(this);
         this.calculatewinner_diag4 =this.calculatewinner_diag4.bind(this);
         this.restart_game =this.restart_game.bind(this);
+        this.maninput = this.maninput.bind(this);
+    }
+    maninput(a){
+        
+        this.state.player = a;
+        this.setState({
+          player:this.state.player,
+        })
         
     }
     changedata(i) {
+        
+        if(this.state.xisNext==true)
+            this.state.moves++;
+        
         this.state.column_no[i]++;
         if (this.state.xisNext == true)
             this.state.grid[this.state.column_no[i]][i] = 'X';
@@ -43,14 +68,30 @@ class App extends Component {
         this.calculatewinner_diag3();
         this.calculatewinner_diag4();
 
+        if(this.state.winner_set==true && this.state.winner=="X")
+        {
+          let obj = {};
+          obj.player_name = this.state.player;
+          obj.moves = this.state.moves;
+          this.state.history.push(obj);
+
+          var his = JSON.parse(localStorage.getItem("leaderboard1")) || [];
+          his.push(obj);
+          localStorage.setItem("leaderboard1", JSON.stringify(his));
+        }
         this.setState({
             column_no: this.state.column_no,
             grid: this.state.grid,
             xisNext: !this.state.xisNext,
             winner_set: this.state.winner_set,
             winner: this.state.winner,
+            moves:this.state.moves,
+            history:this.state.history,
         })
+
+
         console.log(this.state);
+        
     }
     restart_game()
     {
@@ -69,6 +110,10 @@ class App extends Component {
             ],
             winner_set: false,
             winner: null,
+            history:this.state.history,
+            player:'',
+            moves:0,
+
         }
         )
 
@@ -280,10 +325,11 @@ class App extends Component {
 
     }
   render() {
-    let status
+    let status;
+    let abc = this.state.player;
     if(this.state.winner_set==false)
       if(this.state.xisNext==true)
-         status ="Next Player:X";
+         status ="Next Player:"+abc+"(X)";
       else
          status = "Next Player:O";
     else
@@ -292,16 +338,27 @@ class App extends Component {
       else
         status="Winner:O";
     return (
+      <HashRouter>
     	<div>
-    	<h2 className="welcome_heading">Welcome to Connect-4</h2>
-      {status}
-    	<div className="game">	
-    		<div className="game-board">
-          		<Board state1={this.state} changedata={this.changedata}/>
-        	</div>
-        </div>
-      <button onClick={this.restart_game}> Restart Game </button>
-        </div>
+    	<Heading/>
+
+      <ul className="header">
+            <li><NavLink exact to="/">About the Game and Rules</NavLink></li>
+            <li><NavLink to="/board">Board</NavLink></li>
+            <li><NavLink to="/leaderboard">Leaderboard</NavLink></li>
+      </ul>
+      <div className="content">
+            <Route exact path='/' render = {() => <div> <About/>  <Input status={status} maninput={this.maninput}  /></div> }/>
+            <div className="game">  
+                  <div className="game-board">
+                          <Route exact path='/board' render = {() => <div> {status} <Board state1={this.state} changedata={this.changedata}/> <button onClick={this.restart_game}>Restart Game </button> </div>}/>
+                  </div>
+            </div>
+            <Route exact path='/leaderboard' render = {() => <Scoreboard state5 = {this.state} />}/>
+      </div>
+       
+     </div>
+     </HashRouter> 
     );
   }
 }
