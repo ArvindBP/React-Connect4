@@ -5,7 +5,6 @@ import {
   HashRouter
 } from "react-router-dom";
 import './App.css';
-import './about.css';
 // import Gamescreen from '../connect4_gs/gamescreen';
 import About from './about';
 import Board from '../connect4_gs/board';
